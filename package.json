@@ -1,0 +1,18 @@
+{
+  "name": "timeworth",
+  "version": "1.0.0",
+  "description": "Time ROI Calculator - Evaluate whether time invested in activities is worth it",
+  "main": "server.js",
+  "scripts": {
+    "start": "bun run server.js",
+    "dev": "bun run server.js"
+  },
+  "keywords": [
+    "time",
+    "roi",
+    "calculator",
+    "productivity"
+  ],
+  "author": "",
+  "license": "MIT"
+}

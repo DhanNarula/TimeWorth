@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeWorth - Time ROI Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #667eea 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .label-description {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            transition: all 0.2s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        input[type="number"]::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .slider-wrapper {
+            margin-top: 12px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            margin-bottom: 12px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, #667eea 0%, #22c55e 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            transition: transform 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, #667eea 0%, #22c55e 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            transition: transform 0.15s;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .slider-input-group input[type="number"] {
+            width: 90px;
+            flex-shrink: 0;
+        }
+
+        .value-display {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            min-width: 40px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px 24px;
+            background: white;
+            color: #0a0a0a;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            font-family: inherit;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-container {
+            margin-top: 40px;
+            padding: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .score-value {
+            font-size: 72px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #667eea 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .verdict {
+            padding: 20px;
+            margin-bottom: 28px;
+            border-left: 3px solid;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .verdict-category {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .verdict-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .verdict.low {
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        .verdict.moderate {
+            border-color: #f59e0b;
+            color: #fcd34d;
+        }
+
+        .verdict.good {
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+
+        .verdict.excellent {
+            border-color: #22c55e;
+            color: #86efac;
+        }
+
+        .verdict.exceptional {
+            border-color: #10b981;
+            color: #6ee7b7;
+        }
+
+        .breakdown {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-title {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .breakdown-item.total {
+            margin-top: 12px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 32px 20px;
+            }
+
+            h1 {
+                font-size: 40px;
+            }
+
+            .score-value {
+                font-size: 56px;
+            }
+
+            .slider-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .slider-input-group input[type="number"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tag">Time ROI Calculator</div>
+        <h1>
+            The calculator<br>
+            <span class="gradient-text">for how you invest time</span>
+        </h1>
+        <p class="subtitle">
+            Effort. Skill Growth. Perceived Value. All in one simple calculator that helps you evaluate whether your time investment was worth it.
+        </p>
+
+        <form id="roiForm">
+            <div class="form-group">
+                <label for="timeSpent">
+                    Time Spent (hours)
+                    <span class="label-description">How many hours did you invest?</span>
+                </label>
+                <input 
+                    type="number" 
+                    id="timeSpent" 
+                    name="timeSpent" 
+                    min="0.1" 
+                    step="0.1" 
+                    placeholder="10"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="effort">
+                    Effort Level (0-10)
+                    <span class="label-description">How much effort did you put in?</span>
+                </label>
+                <div class="slider-wrapper">
+                    <input 
+                        type="range" 
+                        id="effortSlider" 
+                        name="effort" 
+                        min="0" 
+                        max="10" 
+                        step="0.1" 
+                        value="5"
+                    >
+                    <div class="slider-input-group">
+                        <input 
+                            type="number" 
+                            id="effort" 
+                            name="effort" 
+                            min="0" 
+                            max="10" 
+                            step="0.1" 
+                            value="5"
+                        >
+                        <span class="value-display">5.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="skillGrowth">
+                    Skill Growth (0-10)
+                    <span class="label-description">How much did your skills improve?</span>
+                </label>
+                <div class="slider-wrapper">
+                    <input 
+                        type="range" 
+                        id="skillGrowthSlider" 
+                        name="skillGrowth" 
+                        min="0" 
+                        max="10" 
+                        step="0.1" 
+                        value="5"
+                    >
+                    <div class="slider-input-group">
+                        <input 
+                            type="number" 
+                            id="skillGrowth" 
+                            name="skillGrowth" 
+                            min="0" 
+                            max="10" 
+                            step="0.1" 
+                            value="5"
+                        >
+                        <span class="value-display">5.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="perceivedValue">
+                    Perceived Value (0-10)
+                    <span class="label-description">How valuable was this activity overall?</span>
+                </label>
+                <div class="slider-wrapper">
+                    <input 
+                        type="range" 
+                        id="perceivedValueSlider" 
+                        name="perceivedValue" 
+                        min="0" 
+                        max="10" 
+                        step="0.1" 
+                        value="5"
+                    >
+                    <div class="slider-input-group">
+                        <input 
+                            type="number" 
+                            id="perceivedValue" 
+                            name="perceivedValue" 
+                            min="0" 
+                            max="10" 
+                            step="0.1" 
+                            value="5"
+                        >
+                        <span class="value-display">5.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <button type="submit">
+                Calculate ROI →
+            </button>
+        </form>
+
+        <div class="result-container" id="resultContainer">
+            <div class="score-display">
+                <div class="score-value" id="scoreValue">0</div>
+                <div class="score-label">Time ROI Score</div>
+            </div>
+
+            <div class="verdict" id="verdict">
+                <div class="verdict-category" id="verdictCategory"></div>
+                <div class="verdict-description" id="verdictDescription"></div>
+            </div>
+
+            <div class="breakdown">
+                <div class="breakdown-title">Breakdown</div>
+                <div class="breakdown-item">
+                    <span>Effort:</span>
+                    <span id="effortContribution">-</span>
+                </div>
+                <div class="breakdown-item">
+                    <span>Skill Growth:</span>
+                    <span id="skillGrowthContribution">-</span>
+                </div>
+                <div class="breakdown-item">
+                    <span>Perceived Value:</span>
+                    <span id="valueContribution">-</span>
+                </div>
+                <div class="breakdown-item total">
+                    <span>Composite Score:</span>
+                    <span id="compositeScore">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function validateInputs(timeSpent, effort, skillGrowth, perceivedValue) {
+            if (typeof timeSpent !== 'number' || isNaN(timeSpent)) {
+                throw new Error('Time spent must be a valid number');
+            }
+            if (timeSpent <= 0) {
+                throw new Error('Time spent must be greater than 0');
+            }
+            if (typeof effort !== 'number' || isNaN(effort)) {
+                throw new Error('Effort must be a valid number');
+            }
+            if (effort < 0 || effort > 10) {
+                throw new Error('Effort must be between 0 and 10');
+            }
+            if (typeof skillGrowth !== 'number' || isNaN(skillGrowth)) {
+                throw new Error('Skill growth must be a valid number');
+            }
+            if (skillGrowth < 0 || skillGrowth > 10) {
+                throw new Error('Skill growth must be between 0 and 10');
+            }
+            if (typeof perceivedValue !== 'number' || isNaN(perceivedValue)) {
+                throw new Error('Perceived value must be a valid number');
+            }
+            if (perceivedValue < 0 || perceivedValue > 10) {
+                throw new Error('Perceived value must be between 0 and 10');
+            }
+        }
+
+        function calculateTimeROI(timeSpent, effort, skillGrowth, perceivedValue) {
+            const defaultWeights = {
+                effort: 0.2,
+                skillGrowth: 0.3,
+                perceivedValue: 0.5
+            };
+
+            validateInputs(timeSpent, effort, skillGrowth, perceivedValue);
+
+            const compositeScore = (effort * defaultWeights.effort) + 
+                                 (skillGrowth * defaultWeights.skillGrowth) + 
+                                 (perceivedValue * defaultWeights.perceivedValue);
+
+            const timeROI = (compositeScore / timeSpent) * 100;
+
+            return {
+                score: Math.round(timeROI * 100) / 100,
+                compositeScore: Math.round(compositeScore * 100) / 100,
+                contributions: {
+                    effort: Math.round(effort * defaultWeights.effort * 100) / 100,
+                    skillGrowth: Math.round(skillGrowth * defaultWeights.skillGrowth * 100) / 100,
+                    perceivedValue: Math.round(perceivedValue * defaultWeights.perceivedValue * 100) / 100
+                }
+            };
+        }
+
+        function interpretTimeROI(score) {
+            if (score < 0) {
+                return { category: 'Invalid', description: 'Score cannot be negative', class: 'low' };
+            } else if (score <= 30) {
+                return { category: 'Low', description: 'Consider if activity is worth continuing', class: 'low' };
+            } else if (score <= 60) {
+                return { category: 'Moderate', description: 'Decent returns, room for improvement', class: 'moderate' };
+            } else if (score <= 80) {
+                return { category: 'Good', description: 'Strong returns relative to time invested', class: 'good' };
+            } else if (score <= 100) {
+                return { category: 'Excellent', description: 'Highly efficient use of time', class: 'excellent' };
+            } else {
+                return { category: 'Exceptional', description: 'Extremely high value per hour', class: 'exceptional' };
+            }
+        }
+
+        function syncSliderAndInput(sliderId, inputId) {
+            const slider = document.getElementById(sliderId);
+            const input = document.getElementById(inputId);
+            const display = slider.parentElement.querySelector('.value-display');
+
+            function updateFromSlider() {
+                const value = parseFloat(slider.value);
+                input.value = value.toFixed(1);
+                display.textContent = value.toFixed(1);
+            }
+
+            function updateFromInput() {
+                let value = parseFloat(input.value);
+                if (isNaN(value)) value = 0;
+                if (value < 0) value = 0;
+                if (value > 10) value = 10;
+                slider.value = value;
+                input.value = value.toFixed(1);
+                display.textContent = value.toFixed(1);
+            }
+
+            slider.addEventListener('input', updateFromSlider);
+            input.addEventListener('input', updateFromInput);
+            input.addEventListener('blur', updateFromInput);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function displayResult(result) {
+            const resultContainer = document.getElementById('resultContainer');
+            const scoreValue = document.getElementById('scoreValue');
+            const verdict = document.getElementById('verdict');
+            const verdictCategory = document.getElementById('verdictCategory');
+            const verdictDescription = document.getElementById('verdictDescription');
+
+            scoreValue.textContent = result.score;
+
+            const interpretation = interpretTimeROI(result.score);
+            verdictCategory.textContent = interpretation.category;
+            verdictDescription.textContent = interpretation.description;
+            verdict.className = 'verdict ' + interpretation.class;
+
+            document.getElementById('effortContribution').textContent = result.contributions.effort.toFixed(2);
+            document.getElementById('skillGrowthContribution').textContent = result.contributions.skillGrowth.toFixed(2);
+            document.getElementById('valueContribution').textContent = result.contributions.perceivedValue.toFixed(2);
+            document.getElementById('compositeScore').textContent = result.compositeScore.toFixed(2);
+
+            resultContainer.classList.add('show');
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        syncSliderAndInput('effortSlider', 'effort');
+        syncSliderAndInput('skillGrowthSlider', 'skillGrowth');
+        syncSliderAndInput('perceivedValueSlider', 'perceivedValue');
+
+        document.getElementById('roiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            try {
+                const timeSpent = parseFloat(document.getElementById('timeSpent').value);
+                const effort = parseFloat(document.getElementById('effort').value);
+                const skillGrowth = parseFloat(document.getElementById('skillGrowth').value);
+                const perceivedValue = parseFloat(document.getElementById('perceivedValue').value);
+
+                const result = calculateTimeROI(timeSpent, effort, skillGrowth, perceivedValue);
+                displayResult(result);
+            } catch (error) {
+                showError(error.message);
+            }
+        });
+    </script>
+</body>
+</html>
